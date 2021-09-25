@@ -12,6 +12,7 @@ import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.Label;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
@@ -51,7 +52,9 @@ public class DanmakuApplication extends Application {
 
         anchorPane.setStyle("-fx-background-color: #FFFFFF");
 
-        var homePagePane = new HomePagePane();
+        var hostServices = this.getHostServices();
+
+        var homePagePane = new HomePagePane(hostServices);
         homePagePane.setStyle("-fx-background-color: white");
         homePagePane.prefHeightProperty().bind(anchorPane.heightProperty().subtract(topView.prefHeightProperty()));
         homePagePane.prefWidthProperty().bind(anchorPane.widthProperty().subtract(leftView.prefWidthProperty()));
@@ -87,11 +90,19 @@ public class DanmakuApplication extends Application {
         exitAndMinimizeView.setPadding(new Insets(0, 0, 4.5, 0));
 
         var exitButton = new Label();
-        exitButton.setOnMouseClicked(event -> stage.close());
+        exitButton.setOnMouseClicked(event -> {
+            if (event.getButton() == MouseButton.PRIMARY) {
+                stage.close();
+            }
+        });
         labelExitMinimizeInit(exitButton, imageViewLightExit, imageViewDarkExit);
 
         var minimizeButton = new Label();
-        minimizeButton.setOnMouseClicked(event -> stage.setIconified(true));
+        minimizeButton.setOnMouseClicked(event -> {
+            if (event.getButton() == MouseButton.PRIMARY) {
+                stage.setIconified(true);
+            }
+        });
         labelExitMinimizeInit(minimizeButton, imageViewLightMinimize, imageViewDarkMinimize);
 
         exitAndMinimizeView.getChildren().addAll(exitButton, minimizeButton);
@@ -125,10 +136,12 @@ public class DanmakuApplication extends Application {
         label.setStyle("-fx-background-color: #323232");
         label.setGraphic(darkImage);
         label.setOnMouseClicked(event -> {
-            label.setGraphic(whiteImage);
-            label.setStyle("-fx-background-color: #23ADE5");
-            menuIndex.set(menuButtons.indexOf(label));
-            menuButtons.stream().filter(_label -> _label != label).forEach(this::menuButtonReset);
+            if (event.getButton() == MouseButton.PRIMARY) {
+                label.setGraphic(whiteImage);
+                label.setStyle("-fx-background-color: #23ADE5");
+                menuIndex.set(menuButtons.indexOf(label));
+                menuButtons.stream().filter(_label -> _label != label).forEach(this::menuButtonReset);
+            }
         });
         label.addEventHandler(MouseEvent.MOUSE_PRESSED, Event::consume);
         label.addEventHandler(MouseEvent.MOUSE_RELEASED, Event::consume);
