@@ -169,11 +169,11 @@ public class DanmakuApplication extends Application {
         topView.setStyle("-fx-background-color: #FFFFFF");
         topView.setPadding(new Insets(14, 0, 14, 14));
         topView.setOnMouseReleased(event -> topView.setCursor(Cursor.DEFAULT));
-        topView.setBorder(new Border(new BorderStroke(Paint.valueOf("#DDDEEA"), BorderStrokeStyle.SOLID, new CornerRadii(0), new BorderWidths(0, 0, 1, 0))));
+        topView.setBorder(new Border(new BorderStroke(Paint.valueOf("#DDDEEA"), BorderStrokeStyle.SOLID, null, new BorderWidths(0, 0, 1, 0))));
 
         var title = new Label("首页");
         title.setTextFill(Color.valueOf("#515A6E"));
-        title.setFont(Font.loadFont("file:fonts/SourceHanSansCN-Bold-2.otf", 18));
+        title.setFont(Font.loadFont(FontsResourcesPath.SIYUANBOLD, 18));
         title.textProperty().bind(DanmakuApplication.title);
         topView.getChildren().addAll(title);
 

@@ -4,8 +4,6 @@ module com.wang.javafxdanmaku {
     requires javafx.fxml;
     requires javafx.web;
     requires jdk.jsobject;
-    requires okhttp3;
-    requires annotations;
     requires com.fasterxml.jackson.core;
     requires com.fasterxml.jackson.databind;
     requires com.fasterxml.jackson.annotation;

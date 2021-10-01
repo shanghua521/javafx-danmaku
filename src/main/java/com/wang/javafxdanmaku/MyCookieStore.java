@@ -8,11 +8,11 @@ import java.util.*;
 import java.util.concurrent.locks.ReentrantLock;
 
 public class MyCookieStore implements CookieStore {
+    private final List<HttpCookie> cookieJar;
+    private final Map<String, List<HttpCookie>> domainIndex;
+    private final Map<URI, List<HttpCookie>> uriIndex;
+    private final ReentrantLock lock;
     public HttpCookie bilibiliCookie = null;
-    private List<HttpCookie> cookieJar = null;
-    private Map<String, List<HttpCookie>> domainIndex = null;
-    private Map<URI, List<HttpCookie>> uriIndex = null;
-    private ReentrantLock lock = null;
 
 
     public MyCookieStore() {

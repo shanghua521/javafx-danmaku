@@ -2,6 +2,7 @@ package com.wang.javafxdanmaku;
 
 import com.wang.javafxdanmaku.entity.LiveInfoResult;
 import com.wang.javafxdanmaku.entity.UserInfoResult;
+import javafx.animation.*;
 import javafx.application.HostServices;
 import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
@@ -9,6 +10,7 @@ import javafx.geometry.Pos;
 import javafx.scene.Cursor;
 import javafx.scene.Node;
 import javafx.scene.Scene;
+import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
@@ -21,15 +23,114 @@ import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Font;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
+import javafx.util.Duration;
 
 import java.util.List;
 
 public class HomePagePane extends AnchorPane {
 
     private final Paint fontColor = Paint.valueOf("#515A6E");
+    private int leftOrRight = 0;
+
 
     public HomePagePane(HostServices hostServices) {
         super();
+
+        var addLiveRoomPane = addLiveRoomPane();
+
+        var liveRoomInfoPane = liveRoomInfoPane();
+
+        var userInfoPane = userInfoPane();
+        setLoginPane(userInfoPane, hostServices);
+
+        var modulePane = modulePane();
+
+        AnchorPane.setTopAnchor(userInfoPane, 10.0);
+        AnchorPane.setLeftAnchor(userInfoPane, 300.0);
+
+        AnchorPane.setTopAnchor(modulePane, userInfoPane.getPrefHeight() + 22);
+        AnchorPane.setLeftAnchor(modulePane, 300.0);
+
+        AnchorPane.setTopAnchor(addLiveRoomPane, 10.0);
+        AnchorPane.setLeftAnchor(addLiveRoomPane, 10.0);
+
+        AnchorPane.setTopAnchor(liveRoomInfoPane, 51.0);
+        AnchorPane.setLeftAnchor(liveRoomInfoPane, 10.0);
+
+        this.getChildren().addAll(addLiveRoomPane, liveRoomInfoPane, userInfoPane, modulePane);
+    }
+
+    private Pane liveRoomInfoPane() {
+        var anchorPane = new AnchorPane();
+
+        var mainLiveRoom = new AnchorPane();
+        mainLiveRoom.setPrefWidth(280);
+        mainLiveRoom.setPrefHeight(350);
+        mainLiveRoom.setBorder(new Border(new BorderStroke(Paint.valueOf("#DDDEEA"), BorderStrokeStyle.SOLID, new CornerRadii(5), null)));
+
+        var inMainLiveRoom = new AnchorPane();
+
+        var mainRoomLabel = new Label("主房间");
+        mainRoomLabel.setTextFill(Paint.valueOf("#4FBDEA"));
+        mainRoomLabel.setFont(Font.loadFont(FontsResourcesPath.SIYUANREGULAR, 14));
+
+        var mainRoomIdLabel = new Label("直播间ID: 2292954");
+        mainRoomLabel.setTextFill(Paint.valueOf("#666E80"));
+        mainRoomLabel.setFont(Font.loadFont(FontsResourcesPath.SIYUANREGULAR, 14));
+
+        var mainRoomHBox = new HBox(10);
+        mainRoomHBox.getChildren().addAll(mainRoomLabel, mainRoomIdLabel);
+
+        var connectLiveRoom = new Button("连接");
+        connectLiveRoom.setPrefWidth(55);
+        connectLiveRoom.setCursor(Cursor.HAND);
+        connectLiveRoom.setTextFill(Color.WHITE);
+        connectLiveRoom.setStyle("-fx-background-color: #23ADE5");
+        connectLiveRoom.setFont(Font.loadFont(FontsResourcesPath.SIYUANREGULAR, 13));
+        connectLiveRoom.setOnMouseExited(event -> connectLiveRoom.setStyle("-fx-background-color: #23ADE5"));
+        connectLiveRoom.setOnMouseEntered(event -> connectLiveRoom.setStyle("-fx-background-color: #4FBDEA"));
+
+        var mainRoomTitleLabel = new Label("直播间标题");
+        var mainRoomTitleValue = new Label("国庆快乐！摸一会战地1，聊聊天");
+
+        var mainRoomAreaLabel = new Label("直播间分区");
+        var mainRoomAreaValue = new Label("单机游戏 · 其他单机");
+
+        var mainRoomCoverLabel = new Label("直播间封面");
+
+        var liveRoomAreaHBox = new HBox(25);
+        liveRoomAreaHBox.getChildren().addAll(mainRoomAreaLabel, mainRoomAreaValue);
+
+        var liveRoomInfoVBox = new VBox(5);
+        liveRoomInfoVBox.getChildren().addAll(mainRoomTitleLabel, mainRoomTitleValue, liveRoomAreaHBox, mainRoomCoverLabel);
+
+        var mainRoomLabelList = List.of(mainRoomTitleLabel, mainRoomTitleValue, mainRoomAreaLabel, mainRoomAreaValue, mainRoomCoverLabel);
+
+        var paint = Paint.valueOf("#515A6E");
+        var font = Font.loadFont(FontsResourcesPath.SIYUANREGULAR, 12);
+        mainRoomLabelList.forEach(label -> {
+            label.setTextFill(paint);
+            label.setFont(font);
+        });
+
+        AnchorPane.setTopAnchor(connectLiveRoom, 20.0);
+        AnchorPane.setTopAnchor(liveRoomInfoVBox, 50.0);
+
+        inMainLiveRoom.getChildren().addAll(liveRoomInfoVBox);
+        inMainLiveRoom.getChildren().addAll(mainRoomHBox, connectLiveRoom);
+
+        AnchorPane.setTopAnchor(inMainLiveRoom, 15.0);
+        AnchorPane.setLeftAnchor(inMainLiveRoom, 15.0);
+        AnchorPane.setTopAnchor(inMainLiveRoom, 15.0);
+        AnchorPane.setBottomAnchor(inMainLiveRoom, 15.0);
+
+        mainLiveRoom.getChildren().addAll(inMainLiveRoom);
+
+        anchorPane.getChildren().addAll(mainLiveRoom);
+        return anchorPane;
+    }
+
+    private Pane addLiveRoomPane() {
         // 添加直播间输入框以及按钮
         var live = new HBox();
         var liveId = new TextField();
@@ -38,10 +139,12 @@ public class HomePagePane extends AnchorPane {
         liveId.setPrefWidth(186);
         liveId.setPrefHeight(31);
         liveId.setPromptText("直播间ID");
-        liveId.setBackground(new Background(new BackgroundFill(Paint.valueOf("#FFFFFF"), new CornerRadii(5, 0, 0, 5, false), new Insets(0))));
+        liveId.setFont(Font.loadFont(FontsResourcesPath.SIYUANREGULAR, 12));
+        liveId.setBackground(new Background(new BackgroundFill(Paint.valueOf("#FFFFFF"), new CornerRadii(5, 0, 0, 5, false), null)));
 
-        var defaultBorder = new Border(new BorderStroke(Paint.valueOf("#DDDEEA"), BorderStrokeStyle.SOLID, new CornerRadii(5, 0, 0, 5, false), new BorderWidths(1)));
-        var focusedBorder = new Border(new BorderStroke(Paint.valueOf("#4FBDEA"), BorderStrokeStyle.SOLID, new CornerRadii(5, 0, 0, 5, false), new BorderWidths(1)));
+        var defaultBorder = new Border(new BorderStroke(Paint.valueOf("#DDDEEA"), BorderStrokeStyle.SOLID, new CornerRadii(5, 0, 0, 5, false), null));
+        var focusedBorder = new Border(new BorderStroke(Paint.valueOf("#4FBDEA"), BorderStrokeStyle.SOLID, new CornerRadii(5, 0, 0, 5, false), null));
+
         liveId.setBorder(defaultBorder);
         liveId.focusedProperty().addListener((observable, oldValue, newValue) -> liveId.setBorder(newValue ? defaultBorder : focusedBorder));
         liveId.setOnMouseEntered(event -> liveId.setBorder(focusedBorder));
@@ -49,25 +152,15 @@ public class HomePagePane extends AnchorPane {
 
         addLive.setPrefWidth(94);
         addLive.setPrefHeight(31);
-        addLive.setAlignment(Pos.CENTER);
         addLive.setCursor(Cursor.HAND);
-        addLive.setBackground(new Background(new BackgroundFill(Paint.valueOf("#F8F8F9"), new CornerRadii(0, 5, 5, 0, false), new Insets(0))));
+        addLive.setAlignment(Pos.CENTER);
+        addLive.setFont(Font.loadFont(FontsResourcesPath.SIYUANREGULAR, 12));
+        addLive.setBackground(new Background(new BackgroundFill(Paint.valueOf("#F8F8F9"), new CornerRadii(0, 5, 5, 0, false), null)));
         addLive.setBorder(new Border(new BorderStroke(Paint.valueOf("#DDDEEA"), BorderStrokeStyle.SOLID, new CornerRadii(0, 5, 5, 0, false), new BorderWidths(1, 1, 1, 0))));
 
         live.getChildren().addAll(liveId, addLive);
-
-        var userInfoPane = userInfoPane();
-        setLoginPane(userInfoPane, hostServices);
-
-        AnchorPane.setTopAnchor(userInfoPane, 10.0);
-        AnchorPane.setLeftAnchor(userInfoPane, 300.0);
-
-        AnchorPane.setTopAnchor(live, 10.0);
-        AnchorPane.setLeftAnchor(live, 10.0);
-
-        this.getChildren().addAll(live, userInfoPane);
+        return live;
     }
-
 
     private AnchorPane userInfoPane() {
         var userInfoPane = new AnchorPane();
@@ -75,8 +168,182 @@ public class HomePagePane extends AnchorPane {
         userInfoPane.setPrefHeight(128);
         userInfoPane.setStyle("-fx-padding: 9");
         userInfoPane.setBackground(new Background(new BackgroundFill(Paint.valueOf("#FFFFFF"), new CornerRadii(5, false), new Insets(10))));
-        userInfoPane.setBorder(new Border(new BorderStroke(Paint.valueOf("#DDDEEA"), BorderStrokeStyle.SOLID, new CornerRadii(5, false), new BorderWidths(1))));
+        userInfoPane.setBorder(new Border(new BorderStroke(Paint.valueOf("#DDDEEA"), BorderStrokeStyle.SOLID, new CornerRadii(5, false), null)));
         return userInfoPane;
+    }
+
+    private AnchorPane modulePane() {
+        var modulePane = new AnchorPane();
+        modulePane.setPrefWidth(585);
+        modulePane.setPrefHeight(228);
+
+        var appModule = new Label("应用模块");
+        appModule.setPrefWidth(89);
+        appModule.setPrefHeight(30);
+        appModule.setCursor(Cursor.HAND);
+        appModule.setAlignment(Pos.CENTER);
+        appModule.setTextFill(Color.valueOf("#515A6E"));
+        appModule.setFont(Font.loadFont(FontsResourcesPath.SIYUANBOLD, 14));
+
+        var obsModule = new Label("OBS模块");
+        obsModule.setPrefWidth(89);
+        obsModule.setPrefHeight(30);
+        obsModule.setCursor(Cursor.HAND);
+        obsModule.setAlignment(Pos.CENTER);
+        obsModule.setTextFill(Color.valueOf("#515A6E"));
+        obsModule.setFont(Font.loadFont(FontsResourcesPath.SIYUANBOLD, 14));
+
+        var clickColor = Paint.valueOf("#23ADE5");
+        var defaultColor = Paint.valueOf("#515A6E");
+
+        var line = new Rectangle();
+        line.setWidth(89);
+        line.setHeight(2);
+        line.setFill(Paint.valueOf("#23ADE5"));
+
+        // 应用模块 OBS 模块下线条切换特效
+        var goLeft = new Timeline();
+        goLeft.getKeyFrames().addAll(new KeyFrame(Duration.ZERO, new KeyValue(line.translateXProperty(), 89)),
+                new KeyFrame(Duration.seconds(0.2), new KeyValue(line.translateXProperty(), 0)));
+
+        var goRight = new Timeline();
+        goRight.getKeyFrames().addAll(new KeyFrame(Duration.ZERO, new KeyValue(line.translateXProperty(), 0)),
+                new KeyFrame(Duration.seconds(0.2), new KeyValue(line.translateXProperty(), 89)));
+
+        AnchorPane.setLeftAnchor(obsModule, appModule.getPrefWidth());
+
+        AnchorPane.setTopAnchor(line, appModule.getPrefHeight());
+
+        modulePane.getChildren().addAll(appModule, obsModule, line);
+
+        var appAndObsPane = new AnchorPane();
+
+        var appPane = new GridPane();
+        appPane.setVgap(7.4);
+        appPane.setHgap(7.4);
+
+        var danmakuItem = moduleItem(ImagesConstants.imageViewWhiteHomePage, "弹幕视图");
+        var presentItem = moduleItem(ImagesConstants.imageViewWhiteHomePage, "礼物素材");
+        var luckyDrawItem = moduleItem(ImagesConstants.imageViewWhiteHomePage, "抽奖面板");
+
+        appPane.addRow(0, danmakuItem);
+        appPane.addRow(0, presentItem);
+        appPane.addRow(0, luckyDrawItem);
+
+        var obsPane = new GridPane();
+        obsPane.setVgap(7.4);
+        obsPane.setHgap(7.4);
+
+        appAndObsPane.getChildren().addAll(appPane, obsPane);
+
+        var clip = new Rectangle(589.4 * 2, 589.4);
+        appAndObsPane.setClip(clip);
+
+        double sixHundred = 600;
+
+        AnchorPane.setLeftAnchor(obsPane, sixHundred);
+
+        var obsDanmakuItem = moduleItem(ImagesConstants.imageViewWhiteHomePage, "弹幕视图");
+        var chooseSongItem = moduleItem(ImagesConstants.imageViewWhiteHomePage, "点歌列表");
+
+        obsPane.addRow(0, obsDanmakuItem);
+        obsPane.addRow(0, chooseSongItem);
+
+        modulePane.getChildren().addAll(appAndObsPane);
+
+        // 模块 grid 特效
+        var appModuleShow = new Timeline();
+        appModuleShow.getKeyFrames().addAll(
+                new KeyFrame(Duration.ZERO, new KeyValue(appAndObsPane.translateXProperty(), -sixHundred), new KeyValue(clip.layoutXProperty(), sixHundred)),
+                new KeyFrame(Duration.seconds(0.2), new KeyValue(appAndObsPane.translateXProperty(), 0, Interpolator.EASE_BOTH), new KeyValue(clip.layoutXProperty(), 0, Interpolator.EASE_BOTH)));
+
+        var obsModuleShow = new Timeline();
+        obsModuleShow.getKeyFrames().addAll(
+                new KeyFrame(Duration.ZERO, new KeyValue(appAndObsPane.translateXProperty(), 0), new KeyValue(clip.layoutXProperty(), 0)),
+                new KeyFrame(Duration.seconds(0.2), new KeyValue(appAndObsPane.translateXProperty(), -sixHundred, Interpolator.EASE_BOTH), new KeyValue(clip.layoutXProperty(), sixHundred, Interpolator.EASE_BOTH)));
+
+
+        // 应用模块，OBS 模块事件
+        appModule.setOnMouseEntered(event -> {
+            if (leftOrRight == 1) appModule.setTextFill(clickColor);
+        });
+        appModule.setOnMouseExited(event -> {
+            if (leftOrRight == 1) appModule.setTextFill(defaultColor);
+        });
+        appModule.setOnMouseClicked(event -> {
+            if (event.getButton() == MouseButton.PRIMARY) {
+                if (goLeft.getStatus() != Animation.Status.RUNNING && goRight.getStatus() != Animation.Status.RUNNING && line.getTranslateX() == 89.0) {
+                    goLeft.play();
+                }
+                if (appModuleShow.getStatus() != Animation.Status.RUNNING && obsModuleShow.getStatus() != Animation.Status.RUNNING && appAndObsPane.getTranslateX() == -sixHundred) {
+                    appModuleShow.play();
+                }
+                leftOrRight = 0;
+                appModule.setTextFill(clickColor);
+                obsModule.setTextFill(defaultColor);
+            }
+        });
+
+        obsModule.setOnMouseEntered(event -> {
+            if (leftOrRight == 0) obsModule.setTextFill(clickColor);
+        });
+        obsModule.setOnMouseExited(event -> {
+            if (leftOrRight == 0) obsModule.setTextFill(defaultColor);
+        });
+        obsModule.setOnMouseClicked(event -> {
+            if (event.getButton() == MouseButton.PRIMARY) {
+                if (goRight.getStatus() != Animation.Status.RUNNING && goLeft.getStatus() != Animation.Status.RUNNING && line.getTranslateX() == 0.0) {
+                    goRight.play();
+                }
+                if (obsModuleShow.getStatus() != Animation.Status.RUNNING && appModuleShow.getStatus() != Animation.Status.RUNNING && appAndObsPane.getTranslateX() == 0.0) {
+                    obsModuleShow.play();
+                }
+                leftOrRight = 1;
+                obsModule.setTextFill(clickColor);
+                appModule.setTextFill(defaultColor);
+            }
+        });
+
+        AnchorPane.setTopAnchor(appAndObsPane, appModule.getPrefHeight() + 10);
+
+        return modulePane;
+    }
+
+    private Pane moduleItem(ImageView pic, String txt) {
+        var anchorPane = new AnchorPane();
+
+        anchorPane.setPrefWidth(190);
+        anchorPane.setPrefHeight(50);
+        anchorPane.setCursor(Cursor.HAND);
+        anchorPane.setBackground(new Background(new BackgroundFill(null, new CornerRadii(3), null)));
+        anchorPane.setBorder(new Border(new BorderStroke(Paint.valueOf("DDDEEA"), BorderStrokeStyle.SOLID, new CornerRadii(3), null)));
+
+        var imageView = new ImageView(pic.getImage());
+        imageView.setFitWidth(25);
+        imageView.setPreserveRatio(true);
+
+        var image = new Label();
+        image.setGraphic(imageView);
+        image.setPrefWidth(50);
+        image.setPrefHeight(50);
+        image.setAlignment(Pos.CENTER);
+        image.setBackground(new Background(new BackgroundFill(Paint.valueOf("#23ADE5"), new CornerRadii(3, 0, 0, 3, false), null)));
+
+        var txtLabel = new Label(txt);
+
+        txtLabel.setPrefWidth(80);
+        txtLabel.setPrefHeight(50);
+        txtLabel.setAlignment(Pos.CENTER);
+        txtLabel.setTextFill(Paint.valueOf("#515A6E"));
+        txtLabel.setFont(Font.loadFont(FontsResourcesPath.SIYUANBOLD, 16));
+
+        AnchorPane.setTopAnchor(image, 0.5);
+        AnchorPane.setLeftAnchor(image, 0.5);
+        AnchorPane.setLeftAnchor(txtLabel, 50.0);
+
+        anchorPane.getChildren().addAll(image, txtLabel);
+
+        return anchorPane;
     }
 
     private void setLoginPane(AnchorPane userInfoPane, HostServices hostServices) {
@@ -86,7 +353,7 @@ public class HomePagePane extends AnchorPane {
         loginButton.setCursor(Cursor.HAND);
         loginButton.setTextFill(Color.WHITE);
         loginButton.setAlignment(Pos.CENTER);
-        loginButton.setFont(Font.loadFont("file:fonts/SourceHanSansCN-Regular-2.otf", 12));
+        loginButton.setFont(Font.loadFont(FontsResourcesPath.SIYUANREGULAR, 12));
 
         var defaultBackground = new Background(new BackgroundFill(Color.valueOf("#27AEE5"), new CornerRadii(5), null));
         var mouseEnterBackground = new Background(new BackgroundFill(Color.valueOf("#4FBDEA"), new CornerRadii(5), null));
@@ -139,7 +406,7 @@ public class HomePagePane extends AnchorPane {
 //        userInfoPane.setOnMouseEntered(event -> userInfoPane.setEffect(dropShadow));
         var username = new Label();
         username.setTextFill(fontColor);
-        username.setFont(Font.loadFont("file:fonts/SourceHanSansCN-Bold-2.otf", 14));
+        username.setFont(Font.loadFont(FontsResourcesPath.SIYUANBOLD, 14));
 
         // 用户信息
         var userinfo = new HBox(5);
@@ -151,7 +418,7 @@ public class HomePagePane extends AnchorPane {
         var liveTimeForMonthVal = new Label("0");
         var sanLabel = new Label("SAN值");
         var sanVal = new Label("12");
-        var userInfoFont = Font.loadFont("file:fonts/SourceHanSansCN-Regular-2.otf", 12);
+        var userInfoFont = Font.loadFont(FontsResourcesPath.SIYUANREGULAR, 12);
 
         var userData = userInfoResult.getData();
 
@@ -171,7 +438,7 @@ public class HomePagePane extends AnchorPane {
         userinfo.getChildren().addAll(uidLabel, uidVal, liveIdLabel, liveIdVal, liveTimeForMonthLabel, liveTimeForMonthVal, sanLabel, sanVal);
         setFonts(userinfo.getChildren(), fontColor, userInfoFont);
 
-        var levelFont = Font.loadFont("file:fonts/SourceHanSansCN-Regular-2.otf", 14);
+        var levelFont = Font.loadFont(FontsResourcesPath.SIYUANREGULAR, 14);
 
         var level = new HBox(20);
         level.setAlignment(Pos.CENTER);
@@ -252,7 +519,7 @@ public class HomePagePane extends AnchorPane {
         var logout = new Label("登出");
 
 
-        var toolFont = Font.loadFont("file:fonts/SourceHanSansCN-Regular-2.otf", 12.5);
+        var toolFont = Font.loadFont(FontsResourcesPath.SIYUANREGULAR, 12.5);
         var toolList = List.of(liveRoom, liveSetting, liveCentre, biliSpace, messageCentre, logout);
         var defaultToolBorder = new Border(new BorderStroke(Paint.valueOf("#DDDEEA"), BorderStrokeStyle.SOLID, new CornerRadii(3), new BorderWidths(1)));
         var blueToolBorder = new Border(new BorderStroke(Paint.valueOf("#4FBDEA"), BorderStrokeStyle.SOLID, new CornerRadii(3), new BorderWidths(1)));
