@@ -1,6 +1,8 @@
 package com.wang.javafxdanmaku;
 
 import com.wang.javafxdanmaku.entity.LiveInfoResult;
+import com.wang.javafxdanmaku.entity.LiveRoomInfo;
+import com.wang.javafxdanmaku.entity.LiveRoomInfoResult;
 import com.wang.javafxdanmaku.entity.UserInfoResult;
 import javafx.animation.*;
 import javafx.application.HostServices;
@@ -31,14 +33,14 @@ public class HomePagePane extends AnchorPane {
 
     private final Paint fontColor = Paint.valueOf("#515A6E");
     private int leftOrRight = 0;
-
+    private Pane liveRoomInfoPane;
 
     public HomePagePane(HostServices hostServices) {
         super();
 
         var addLiveRoomPane = addLiveRoomPane();
 
-        var liveRoomInfoPane = liveRoomInfoPane();
+//        var liveRoomInfoPane = liveRoomInfoPane();
 
         var userInfoPane = userInfoPane();
         setLoginPane(userInfoPane, hostServices);
@@ -54,13 +56,15 @@ public class HomePagePane extends AnchorPane {
         AnchorPane.setTopAnchor(addLiveRoomPane, 10.0);
         AnchorPane.setLeftAnchor(addLiveRoomPane, 10.0);
 
-        AnchorPane.setTopAnchor(liveRoomInfoPane, 51.0);
-        AnchorPane.setLeftAnchor(liveRoomInfoPane, 10.0);
+//        AnchorPane.setTopAnchor(liveRoomInfoPane, 51.0);
+//        AnchorPane.setLeftAnchor(liveRoomInfoPane, 10.0);
 
-        this.getChildren().addAll(addLiveRoomPane, liveRoomInfoPane, userInfoPane, modulePane);
+        this.getChildren().addAll(addLiveRoomPane, userInfoPane, modulePane);
     }
 
-    private Pane liveRoomInfoPane() {
+    private Pane getLiveRoomInfoPane(LiveRoomInfoResult liveRoomInfoResult) {
+        LiveRoomInfo liveRoomInfo = liveRoomInfoResult.getRoom_info();
+
         var anchorPane = new AnchorPane();
 
         var mainLiveRoom = new AnchorPane();
@@ -74,7 +78,7 @@ public class HomePagePane extends AnchorPane {
         mainRoomLabel.setTextFill(Paint.valueOf("#4FBDEA"));
         mainRoomLabel.setFont(Font.loadFont(FontsResourcesPath.SIYUANREGULAR, 14));
 
-        var mainRoomIdLabel = new Label("直播间ID: 2292954");
+        var mainRoomIdLabel = new Label("直播间ID: " + liveRoomInfo.getRoom_id() + "");
         mainRoomLabel.setTextFill(Paint.valueOf("#666E80"));
         mainRoomLabel.setFont(Font.loadFont(FontsResourcesPath.SIYUANREGULAR, 14));
 
@@ -87,22 +91,29 @@ public class HomePagePane extends AnchorPane {
         connectLiveRoom.setTextFill(Color.WHITE);
         connectLiveRoom.setStyle("-fx-background-color: #23ADE5");
         connectLiveRoom.setFont(Font.loadFont(FontsResourcesPath.SIYUANREGULAR, 13));
+        connectLiveRoom.setOnMouseClicked(event -> {
+
+        });
         connectLiveRoom.setOnMouseExited(event -> connectLiveRoom.setStyle("-fx-background-color: #23ADE5"));
         connectLiveRoom.setOnMouseEntered(event -> connectLiveRoom.setStyle("-fx-background-color: #4FBDEA"));
 
         var mainRoomTitleLabel = new Label("直播间标题");
-        var mainRoomTitleValue = new Label("国庆快乐！摸一会战地1，聊聊天");
+        var mainRoomTitleValue = new Label(liveRoomInfo.getTitle());
 
         var mainRoomAreaLabel = new Label("直播间分区");
-        var mainRoomAreaValue = new Label("单机游戏 · 其他单机");
+        var mainRoomAreaValue = new Label(liveRoomInfo.getParent_area_name() + " · " + liveRoomInfo.getArea_name());
 
         var mainRoomCoverLabel = new Label("直播间封面");
+
+        var cover = new ImageView(liveRoomInfo.getCover());
+        cover.setFitWidth(245);
+        cover.setPreserveRatio(true);
 
         var liveRoomAreaHBox = new HBox(25);
         liveRoomAreaHBox.getChildren().addAll(mainRoomAreaLabel, mainRoomAreaValue);
 
         var liveRoomInfoVBox = new VBox(5);
-        liveRoomInfoVBox.getChildren().addAll(mainRoomTitleLabel, mainRoomTitleValue, liveRoomAreaHBox, mainRoomCoverLabel);
+        liveRoomInfoVBox.getChildren().addAll(mainRoomTitleLabel, mainRoomTitleValue, liveRoomAreaHBox, mainRoomCoverLabel, cover);
 
         var mainRoomLabelList = List.of(mainRoomTitleLabel, mainRoomTitleValue, mainRoomAreaLabel, mainRoomAreaValue, mainRoomCoverLabel);
 
@@ -157,6 +168,21 @@ public class HomePagePane extends AnchorPane {
         addLive.setFont(Font.loadFont(FontsResourcesPath.SIYUANREGULAR, 12));
         addLive.setBackground(new Background(new BackgroundFill(Paint.valueOf("#F8F8F9"), new CornerRadii(0, 5, 5, 0, false), null)));
         addLive.setBorder(new Border(new BorderStroke(Paint.valueOf("#DDDEEA"), BorderStrokeStyle.SOLID, new CornerRadii(0, 5, 5, 0, false), new BorderWidths(1, 1, 1, 0))));
+
+        addLive.setOnMouseClicked(event -> {
+            if (event.getButton() == MouseButton.PRIMARY) {
+                var liveInfo = LiveHttpUtils.getLiveInfo(liveId.getText());
+                if (liveInfo.isPresent()) {
+                    if (liveRoomInfoPane != null) {
+                        this.getChildren().remove(liveRoomInfoPane);
+                    }
+                    liveRoomInfoPane = getLiveRoomInfoPane(liveInfo.get());
+                    this.getChildren().add(liveRoomInfoPane);
+                    AnchorPane.setTopAnchor(liveRoomInfoPane, 51.0);
+                    AnchorPane.setLeftAnchor(liveRoomInfoPane, 10.0);
+                }
+            }
+        });
 
         live.getChildren().addAll(liveId, addLive);
         return live;
