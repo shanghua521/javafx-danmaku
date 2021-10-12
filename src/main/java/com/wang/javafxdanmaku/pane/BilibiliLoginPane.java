@@ -1,5 +1,6 @@
-package com.wang.javafxdanmaku;
+package com.wang.javafxdanmaku.pane;
 
+import com.wang.javafxdanmaku.MyCookieStore;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.concurrent.Worker;
 import javafx.scene.layout.AnchorPane;

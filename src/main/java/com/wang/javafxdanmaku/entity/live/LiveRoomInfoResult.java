@@ -1,4 +1,4 @@
-package com.wang.javafxdanmaku.entity;
+package com.wang.javafxdanmaku.entity.live;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.Getter;
@@ -9,12 +9,8 @@ import lombok.ToString;
 @Setter
 @ToString
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class LiveInfo {
+public class LiveRoomInfoResult {
 
-    private int room_id;
-    private int live_time;
-    private double bili_coins;
-    private int san;
-    private Master master;
+    private LiveRoomInfo room_info;
+
 }
-

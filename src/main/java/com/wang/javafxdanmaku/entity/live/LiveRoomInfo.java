@@ -1,4 +1,4 @@
-package com.wang.javafxdanmaku.entity;
+package com.wang.javafxdanmaku.entity.live;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.Getter;

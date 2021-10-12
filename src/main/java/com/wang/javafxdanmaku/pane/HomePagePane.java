@@ -1,11 +1,24 @@
-package com.wang.javafxdanmaku;
+package com.wang.javafxdanmaku.pane;
 
-import com.wang.javafxdanmaku.entity.LiveInfoResult;
-import com.wang.javafxdanmaku.entity.LiveRoomInfo;
-import com.wang.javafxdanmaku.entity.LiveRoomInfoResult;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.wang.javafxdanmaku.BarrageHeader;
+import com.wang.javafxdanmaku.DanMuMessageClient;
+import com.wang.javafxdanmaku.FontsResourcesPath;
+import com.wang.javafxdanmaku.ImagesConstants;
+import com.wang.javafxdanmaku.entity.FirstSecurityData;
 import com.wang.javafxdanmaku.entity.UserInfoResult;
+import com.wang.javafxdanmaku.entity.live.LiveInfoResult;
+import com.wang.javafxdanmaku.entity.live.LiveRoomInfo;
+import com.wang.javafxdanmaku.entity.live.LiveRoomInfoResult;
+import com.wang.javafxdanmaku.utils.DanMuWebSocketUtils;
+import com.wang.javafxdanmaku.utils.LiveHttpUtils;
+import com.wang.javafxdanmaku.utils.UserHttpUtils;
 import javafx.animation.*;
 import javafx.application.HostServices;
+import javafx.application.Platform;
+import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.property.StringProperty;
 import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -24,14 +37,27 @@ import javafx.scene.paint.Paint;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Font;
 import javafx.stage.Modality;
+import javafx.stage.Screen;
 import javafx.stage.Stage;
+import javafx.stage.StageStyle;
 import javafx.util.Duration;
+import lombok.extern.slf4j.Slf4j;
+import struct.JavaStruct;
+import struct.StructException;
 
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 
+@Slf4j
 public class HomePagePane extends AnchorPane {
 
+    public final static String heartByte = "0000001f0010000100000002000000015b6f626a656374204f626a6563745d";
+    private static final ObjectMapper objectMapper = new ObjectMapper();
+    private static DanMuMessageClient danMuMessageClient = null;
     private final Paint fontColor = Paint.valueOf("#515A6E");
+    private final StringProperty liveTextId = new SimpleStringProperty();
     private int leftOrRight = 0;
     private Pane liveRoomInfoPane;
 
@@ -85,17 +111,17 @@ public class HomePagePane extends AnchorPane {
         var mainRoomHBox = new HBox(10);
         mainRoomHBox.getChildren().addAll(mainRoomLabel, mainRoomIdLabel);
 
-        var connectLiveRoom = new Button("连接");
-        connectLiveRoom.setPrefWidth(55);
-        connectLiveRoom.setCursor(Cursor.HAND);
-        connectLiveRoom.setTextFill(Color.WHITE);
-        connectLiveRoom.setStyle("-fx-background-color: #23ADE5");
-        connectLiveRoom.setFont(Font.loadFont(FontsResourcesPath.SIYUANREGULAR, 13));
-        connectLiveRoom.setOnMouseClicked(event -> {
-
+        var connectLiveRoomButton = new Button("连接");
+        connectLiveRoomButton.setPrefWidth(55);
+        connectLiveRoomButton.setCursor(Cursor.HAND);
+        connectLiveRoomButton.setTextFill(Color.WHITE);
+        connectLiveRoomButton.setStyle("-fx-background-color: #23ADE5");
+        connectLiveRoomButton.setFont(Font.loadFont(FontsResourcesPath.SIYUANREGULAR, 13));
+        connectLiveRoomButton.setOnMouseClicked(event -> {
+            connectLiveRoom(String.valueOf(liveRoomInfo.getRoom_id()));
         });
-        connectLiveRoom.setOnMouseExited(event -> connectLiveRoom.setStyle("-fx-background-color: #23ADE5"));
-        connectLiveRoom.setOnMouseEntered(event -> connectLiveRoom.setStyle("-fx-background-color: #4FBDEA"));
+        connectLiveRoomButton.setOnMouseExited(event -> connectLiveRoomButton.setStyle("-fx-background-color: #23ADE5"));
+        connectLiveRoomButton.setOnMouseEntered(event -> connectLiveRoomButton.setStyle("-fx-background-color: #4FBDEA"));
 
         var mainRoomTitleLabel = new Label("直播间标题");
         var mainRoomTitleValue = new Label(liveRoomInfo.getTitle());
@@ -124,11 +150,11 @@ public class HomePagePane extends AnchorPane {
             label.setFont(font);
         });
 
-        AnchorPane.setTopAnchor(connectLiveRoom, 20.0);
+        AnchorPane.setTopAnchor(connectLiveRoomButton, 20.0);
         AnchorPane.setTopAnchor(liveRoomInfoVBox, 50.0);
 
         inMainLiveRoom.getChildren().addAll(liveRoomInfoVBox);
-        inMainLiveRoom.getChildren().addAll(mainRoomHBox, connectLiveRoom);
+        inMainLiveRoom.getChildren().addAll(mainRoomHBox, connectLiveRoomButton);
 
         AnchorPane.setTopAnchor(inMainLiveRoom, 15.0);
         AnchorPane.setLeftAnchor(inMainLiveRoom, 15.0);
@@ -141,11 +167,69 @@ public class HomePagePane extends AnchorPane {
         return anchorPane;
     }
 
+    private void connectLiveRoom(String liveRoomId) {
+        var liveRoomInitResult = LiveHttpUtils.getLiveRoomInit(liveRoomId);
+        var liveRoomNewsResult = LiveHttpUtils.getLiveRoomNews(liveRoomId);
+        var liveDanMuConfResult = LiveHttpUtils.getLiveDanMuConf(liveRoomId);
+
+        if (liveRoomInitResult.isPresent() && liveRoomNewsResult.isPresent() && liveDanMuConfResult.isPresent()) {
+            var liveRoomInit = liveRoomInitResult.get().getData();
+            var liveRoomNews = liveRoomNewsResult.get().getData();
+            log.info("真实房间号 {} 短房间号 {} 主播名字为 {}", liveRoomInit.getRoomId(), liveRoomInit.getShortId(), liveRoomNews.getUname());
+
+            var liveConf = liveDanMuConfResult.get().getData();
+            var token = liveConf.getToken();
+            var firstSecurityData = new FirstSecurityData();
+
+            firstSecurityData.setKey(token);
+            firstSecurityData.setUid(277705166L);
+            firstSecurityData.setRoomid(Long.valueOf(liveRoomNews.getRoomId()));
+
+            try {
+                // 这个 URL 如果是 wss://broadcastlv.chat.bilibili.com:443/sub 就会连接成功，如果其他的就会失败，但是浏览器内就是用的其他的链接
+                var firstSecurityDataJsonValue = objectMapper.writeValueAsString(firstSecurityData);
+                var dataBytes = firstSecurityDataJsonValue.getBytes(StandardCharsets.UTF_8);
+
+                // 创建 Head 头
+                var barrageHeader = new BarrageHeader(dataBytes.length + 16, (char) 16, (char) 1, 7, 1);
+                var headerBytes = JavaStruct.pack(barrageHeader);
+
+//                var wsUrl = GetWsUrl(liveConf.getHost_list());
+//                danMuMessageClient = new DanMuMessageClient(new URI(wsUrl));
+
+                danMuMessageClient = new DanMuMessageClient(new URI("wss://broadcastlv.chat.bilibili.com:443/sub"));
+                danMuMessageClient.connectBlocking();
+
+                DanMuWebSocketUtils.send(danMuMessageClient, headerBytes, dataBytes);
+                byte[] heartBytes = DanMuWebSocketUtils.fromHexString(heartByte);
+                danMuMessageClient.send(heartBytes);
+
+                var heartThread = new Thread(() -> {
+                    while (true) {
+                        if (danMuMessageClient.isOpen()) {
+                            try {
+                                Thread.sleep(30000);
+                                danMuMessageClient.send(heartBytes);
+                            } catch (InterruptedException e) {
+                                e.printStackTrace();
+                            }
+                        }
+                    }
+                });
+                heartThread.start();
+            } catch (JsonProcessingException | InterruptedException | StructException | URISyntaxException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
     private Pane addLiveRoomPane() {
+        var liveId = new TextField();
         // 添加直播间输入框以及按钮
         var live = new HBox();
-        var liveId = new TextField();
         var addLive = new Label("添加直播间");
+
+        liveTextId.bind(liveId.textProperty());
 
         liveId.setPrefWidth(186);
         liveId.setPrefHeight(31);
@@ -171,16 +255,18 @@ public class HomePagePane extends AnchorPane {
 
         addLive.setOnMouseClicked(event -> {
             if (event.getButton() == MouseButton.PRIMARY) {
-                var liveInfo = LiveHttpUtils.getLiveInfo(liveId.getText());
-                if (liveInfo.isPresent()) {
-                    if (liveRoomInfoPane != null) {
-                        this.getChildren().remove(liveRoomInfoPane);
+                Platform.runLater(() -> {
+                    var liveInfo = LiveHttpUtils.getLiveInfo(liveId.getText());
+                    if (liveInfo.isPresent()) {
+                        if (liveRoomInfoPane != null) {
+                            this.getChildren().remove(liveRoomInfoPane);
+                        }
+                        liveRoomInfoPane = getLiveRoomInfoPane(liveInfo.get());
+                        this.getChildren().add(liveRoomInfoPane);
+                        AnchorPane.setTopAnchor(liveRoomInfoPane, 51.0);
+                        AnchorPane.setLeftAnchor(liveRoomInfoPane, 10.0);
                     }
-                    liveRoomInfoPane = getLiveRoomInfoPane(liveInfo.get());
-                    this.getChildren().add(liveRoomInfoPane);
-                    AnchorPane.setTopAnchor(liveRoomInfoPane, 51.0);
-                    AnchorPane.setLeftAnchor(liveRoomInfoPane, 10.0);
-                }
+                });
             }
         });
 
@@ -251,10 +337,48 @@ public class HomePagePane extends AnchorPane {
         var danmakuItem = moduleItem(ImagesConstants.imageViewWhiteHomePage, "弹幕视图");
         var presentItem = moduleItem(ImagesConstants.imageViewWhiteHomePage, "礼物素材");
         var luckyDrawItem = moduleItem(ImagesConstants.imageViewWhiteHomePage, "抽奖面板");
+        var toolItem = moduleItem(ImagesConstants.imageViewWhiteHomePage, "工具栏");
+        var screenBounds = Screen.getPrimary().getVisualBounds();
+
+        danmakuItem.setOnMouseClicked(event -> {
+            Stage danMuStage = new Stage();
+            var danMuPane = DanMuPane.getInstance();
+
+            Platform.runLater(() -> {
+                danMuStage.setX(65);
+                danMuStage.setY((screenBounds.getHeight() - 250));
+            });
+            Scene danMuScene = new Scene(danMuPane);
+            danMuScene.setFill(null);
+            danMuStage.setResizable(false);
+            danMuStage.setAlwaysOnTop(true);
+            danMuStage.initStyle(StageStyle.TRANSPARENT);
+            danMuStage.setTitle("bilibili - danmaku");
+            danMuStage.setScene(danMuScene);
+            danMuStage.show();
+        });
+        toolItem.setOnMouseClicked(event -> {
+            Stage danMuStage = new Stage();
+            var danMuSendPane = new DanMuSendPane();
+
+            Platform.runLater(() -> {
+                danMuStage.setX(screenBounds.getWidth() - 395);
+                danMuStage.setY((screenBounds.getHeight()));
+            });
+            Scene danMuScene = new Scene(danMuSendPane);
+            danMuScene.setFill(null);
+            danMuStage.setResizable(false);
+            danMuStage.setAlwaysOnTop(true);
+            danMuStage.initStyle(StageStyle.TRANSPARENT);
+            danMuStage.setTitle("bilibili - danmaku");
+            danMuStage.setScene(danMuScene);
+            danMuStage.show();
+        });
 
         appPane.addRow(0, danmakuItem);
         appPane.addRow(0, presentItem);
         appPane.addRow(0, luckyDrawItem);
+        appPane.addRow(1, toolItem);
 
         var obsPane = new GridPane();
         obsPane.setVgap(7.4);

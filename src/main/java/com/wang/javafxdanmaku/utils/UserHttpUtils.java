@@ -1,7 +1,7 @@
-package com.wang.javafxdanmaku;
+package com.wang.javafxdanmaku.utils;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.wang.javafxdanmaku.entity.LiveInfoResult;
+import com.wang.javafxdanmaku.entity.live.LiveInfoResult;
 import com.wang.javafxdanmaku.entity.UserInfoResult;
 import lombok.SneakyThrows;
 

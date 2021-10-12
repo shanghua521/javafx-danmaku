@@ -1,5 +1,6 @@
 package com.wang.javafxdanmaku;
 
+import com.wang.javafxdanmaku.pane.HomePagePane;
 import com.wang.javafxdanmaku.tools.UndecoratedWindow;
 import javafx.application.Application;
 import javafx.beans.property.SimpleIntegerProperty;
