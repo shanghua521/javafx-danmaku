@@ -18,7 +18,6 @@ module com.wang.javafxdanmaku {
     requires org.slf4j;
 
     opens com.wang.javafxdanmaku to javafx.fxml;
-    opens com.wang.javafxdanmaku.entity to com.fasterxml.jackson.databind;
 
     exports com.wang.javafxdanmaku;
     exports com.wang.javafxdanmaku.entity;
@@ -29,4 +28,5 @@ module com.wang.javafxdanmaku {
     exports com.wang.javafxdanmaku.entity.live;
     opens com.wang.javafxdanmaku.entity.live to com.fasterxml.jackson.databind;
     exports com.wang.javafxdanmaku.handler.entity to com.fasterxml.jackson.databind;
+    opens com.wang.javafxdanmaku.entity to com.fasterxml.jackson.databind, javafx.fxml;
 }

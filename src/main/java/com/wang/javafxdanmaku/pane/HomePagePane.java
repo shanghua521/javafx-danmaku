@@ -2,10 +2,7 @@ package com.wang.javafxdanmaku.pane;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.wang.javafxdanmaku.BarrageHeader;
-import com.wang.javafxdanmaku.DanMuMessageClient;
-import com.wang.javafxdanmaku.FontsResourcesPath;
-import com.wang.javafxdanmaku.ImagesConstants;
+import com.wang.javafxdanmaku.*;
 import com.wang.javafxdanmaku.entity.FirstSecurityData;
 import com.wang.javafxdanmaku.entity.UserInfoResult;
 import com.wang.javafxdanmaku.entity.live.LiveInfoResult;
@@ -258,6 +255,7 @@ public class HomePagePane extends AnchorPane {
                 Platform.runLater(() -> {
                     var liveInfo = LiveHttpUtils.getLiveInfo(liveId.getText());
                     if (liveInfo.isPresent()) {
+                        GlobalData.liveRoomId = liveId.getText();
                         if (liveRoomInfoPane != null) {
                             this.getChildren().remove(liveRoomInfoPane);
                         }
@@ -518,7 +516,7 @@ public class HomePagePane extends AnchorPane {
 
                 // 登录成功会调用这个方法
                 bilibiliLoginPane.loginSucceedProperty.addListener((observable, oldValue, newValue) -> {
-                    var bilibiliCookie = bilibiliLoginPane.myCookieStore.bilibiliCookie;
+                    var bilibiliCookie = GlobalData.bilibiliCookie;
                     // 获取用户信息
                     var token = bilibiliCookie.getName() + "=" + bilibiliCookie.getValue();
                     var userInfoResult = UserHttpUtils.getUserInfo(token);

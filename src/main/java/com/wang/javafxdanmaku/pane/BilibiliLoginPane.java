@@ -1,5 +1,6 @@
 package com.wang.javafxdanmaku.pane;
 
+import com.wang.javafxdanmaku.GlobalData;
 import com.wang.javafxdanmaku.MyCookieStore;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.concurrent.Worker;
@@ -13,14 +14,13 @@ import java.util.Optional;
 
 public class BilibiliLoginPane extends AnchorPane {
     public final SimpleBooleanProperty loginSucceedProperty = new SimpleBooleanProperty(false);
-    public final MyCookieStore myCookieStore = new MyCookieStore();
 
     private final WebView webView = new WebView();
     private final WebEngine engine = webView.getEngine();
 
     public BilibiliLoginPane() {
         super();
-        java.net.CookieManager manager = new CookieManager(myCookieStore, CookiePolicy.ACCEPT_ALL);
+        java.net.CookieManager manager = new CookieManager(GlobalData.myCookieStore, CookiePolicy.ACCEPT_ALL);
         java.net.CookieHandler.setDefault(manager);
 
         webView.setZoom(0.8);

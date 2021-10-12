@@ -12,8 +12,6 @@ public class MyCookieStore implements CookieStore {
     private final Map<String, List<HttpCookie>> domainIndex;
     private final Map<URI, List<HttpCookie>> uriIndex;
     private final ReentrantLock lock;
-    public HttpCookie bilibiliCookie = null;
-
 
     public MyCookieStore() {
         cookieJar = new ArrayList<>();
@@ -33,7 +31,10 @@ public class MyCookieStore implements CookieStore {
         }
         // 我们需要的 bilibili cookie
         if ("SESSDATA".equals(cookie.getName())) {
-            bilibiliCookie = cookie;
+            GlobalData.bilibiliCookie = cookie;
+        }
+        if ("bili_jct".equals(cookie.getName())) {
+            GlobalData.biliJct = cookie;
         }
 
         lock.lock();
