@@ -15,9 +15,22 @@ module com.wang.javafxdanmaku {
     requires javastruct;
     requires hutool.core;
 
-    requires org.slf4j;
+    requires spring.jdbc;
+    requires spring.beans;
+    requires spring.expression;
+    requires spring.core;
+    requires spring.aop;
+    requires spring.context;
+    requires spring.boot;
+    requires spring.boot.autoconfigure;
+    requires spring.boot.starter;
+    requires spring.boot.starter.logging;
+    requires spring.tx;
+    requires spring.jcl;
 
-    opens com.wang.javafxdanmaku to javafx.fxml;
+    opens com.wang.javafxdanmaku to spring.core, javafx.fxml, spring.jdbc;
+
+    requires org.slf4j;
 
     exports com.wang.javafxdanmaku;
     exports com.wang.javafxdanmaku.entity;
