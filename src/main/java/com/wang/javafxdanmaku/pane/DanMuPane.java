@@ -5,6 +5,7 @@ import javafx.application.Platform;
 import javafx.scene.control.Label;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
@@ -24,14 +25,16 @@ public class DanMuPane extends AnchorPane {
         mask = new AnchorPane();
         mask.setPrefWidth(320);
         mask.setPrefHeight(399);
+        mask.setStyle("-fx-background-color: rgba(0,0,0,0);");
 
         var anchorPane = new AnchorPane();
         anchorPane.setPrefWidth(320);
+        anchorPane.setStyle("-fx-background-color: rgba(0,0,0,0.8);");
 
-        this.setStyle("-fx-background-color: rgba(0,0,0,0.80);");
         this.getChildren().addAll(mask, anchorPane);
+        this.setStyle("-fx-background-color: rgba(0,0,0,0);");
 
-        var font = Font.loadFont(FontsResourcesPath.SIYUANREGULAR, 15);
+        var font = Font.loadFont(FontsResourcesPath.SIYUANREGULAR, 14);
 
         var bottomView = new HBox(16);
 
@@ -107,14 +110,32 @@ public class DanMuPane extends AnchorPane {
         addMessagePan(messageHBox);
     }
 
-    private void addMessagePan(HBox messageHBox) {
+    public void addFlowMessage(String message, String username) {
+        var singleMessage = new HBox();
+        var usernameLabel = new Label(username);
+        var messageLabel = new Label(message);
+        var timeout = System.currentTimeMillis() + TimeUnit.SECONDS.toMillis(5);
+        singleMessage.setUserData(timeout);
+        usernameLabel.setFont(messageFont);
+        usernameLabel.setTextFill(Color.CORNFLOWERBLUE);
+
+        messageLabel.setWrapText(true);
+        messageLabel.setMaxWidth(182.0);
+        messageLabel.setFont(messageFont);
+        messageLabel.setTextFill(Color.WHITE);
+
+        singleMessage.getChildren().addAll(usernameLabel, messageLabel);
+        addMessagePan(singleMessage);
+    }
+
+    private void addMessagePan(Pane messagePane) {
         var children = messages.getChildren();
         if (children.size() >= 17) {
             children.remove(children.get(0));
         } else {
             mask.setPrefHeight(mask.getPrefHeight() - 22);
         }
-        children.add(messageHBox);
+        children.add(messagePane);
     }
 
     private HBox initMessage(String txtMessage, String userTxt) {
@@ -125,6 +146,8 @@ public class DanMuPane extends AnchorPane {
         username.setFont(messageFont);
         username.setTextFill(Color.CORNFLOWERBLUE);
 
+        messageLabel.setWrapText(true);
+        messageLabel.setMaxWidth(182.0);
         messageLabel.setFont(messageFont);
         messageLabel.setTextFill(Color.WHITE);
 

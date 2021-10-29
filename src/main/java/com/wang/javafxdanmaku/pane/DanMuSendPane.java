@@ -1,13 +1,11 @@
 package com.wang.javafxdanmaku.pane;
 
-import com.wang.javafxdanmaku.FontsResourcesPath;
 import com.wang.javafxdanmaku.GlobalData;
 import com.wang.javafxdanmaku.entity.UserBarrageMsg;
 import com.wang.javafxdanmaku.utils.LiveHttpUtils;
 import javafx.scene.control.TextField;
 import javafx.scene.input.KeyCode;
 import javafx.scene.layout.AnchorPane;
-import javafx.scene.text.Font;
 
 public class DanMuSendPane extends AnchorPane {
 
@@ -34,6 +32,7 @@ public class DanMuSendPane extends AnchorPane {
                     LiveHttpUtils.sendBarrage(textField.getText(), userBarrageMsg);
                     textField.clear();
                 } else {
+                    // TODO 未处理，按理应该弹出提示框，或者在 Pane 中提示
                     System.out.println("请先登录");
                 }
             }

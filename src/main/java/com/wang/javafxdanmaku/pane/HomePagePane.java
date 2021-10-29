@@ -39,6 +39,9 @@ import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import javafx.util.Duration;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.stereotype.Component;
 import struct.JavaStruct;
 import struct.StructException;
 
@@ -48,6 +51,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.List;
 
 @Slf4j
+@Component
 public class HomePagePane extends AnchorPane {
 
     public final static String heartByte = "0000001f0010000100000002000000015b6f626a656374204f626a6563745d";
@@ -58,15 +62,17 @@ public class HomePagePane extends AnchorPane {
     private int leftOrRight = 0;
     private Pane liveRoomInfoPane;
 
-    public HomePagePane(HostServices hostServices) {
-        super();
+    @Autowired
+    private JdbcTemplate jdbcTemplate;
 
+    public HomePagePane() {
+        super();
         var addLiveRoomPane = addLiveRoomPane();
 
 //        var liveRoomInfoPane = liveRoomInfoPane();
 
         var userInfoPane = userInfoPane();
-        setLoginPane(userInfoPane, hostServices);
+        setLoginPane(userInfoPane);
 
         var modulePane = modulePane();
 
@@ -114,9 +120,7 @@ public class HomePagePane extends AnchorPane {
         connectLiveRoomButton.setTextFill(Color.WHITE);
         connectLiveRoomButton.setStyle("-fx-background-color: #23ADE5");
         connectLiveRoomButton.setFont(Font.loadFont(FontsResourcesPath.SIYUANREGULAR, 13));
-        connectLiveRoomButton.setOnMouseClicked(event -> {
-            connectLiveRoom(String.valueOf(liveRoomInfo.getRoom_id()));
-        });
+        connectLiveRoomButton.setOnMouseClicked(event -> connectLiveRoom(String.valueOf(liveRoomInfo.getRoom_id())));
         connectLiveRoomButton.setOnMouseExited(event -> connectLiveRoomButton.setStyle("-fx-background-color: #23ADE5"));
         connectLiveRoomButton.setOnMouseEntered(event -> connectLiveRoomButton.setStyle("-fx-background-color: #4FBDEA"));
 
@@ -252,19 +256,19 @@ public class HomePagePane extends AnchorPane {
 
         addLive.setOnMouseClicked(event -> {
             if (event.getButton() == MouseButton.PRIMARY) {
-                Platform.runLater(() -> {
+                new Thread(() -> {
                     var liveInfo = LiveHttpUtils.getLiveInfo(liveId.getText());
-                    if (liveInfo.isPresent()) {
+                    liveInfo.ifPresent(liveRoomInfoResult -> Platform.runLater(() -> {
                         GlobalData.liveRoomId = liveId.getText();
                         if (liveRoomInfoPane != null) {
                             this.getChildren().remove(liveRoomInfoPane);
                         }
-                        liveRoomInfoPane = getLiveRoomInfoPane(liveInfo.get());
+                        liveRoomInfoPane = getLiveRoomInfoPane(liveRoomInfoResult);
                         this.getChildren().add(liveRoomInfoPane);
                         AnchorPane.setTopAnchor(liveRoomInfoPane, 51.0);
                         AnchorPane.setLeftAnchor(liveRoomInfoPane, 10.0);
-                    }
-                });
+                    }));
+                }).start();
             }
         });
 
@@ -344,7 +348,7 @@ public class HomePagePane extends AnchorPane {
 
             Platform.runLater(() -> {
                 danMuStage.setX(65);
-                danMuStage.setY((screenBounds.getHeight() - 250));
+                danMuStage.setY((screenBounds.getHeight() - 350));
             });
             Scene danMuScene = new Scene(danMuPane);
             danMuScene.setFill(null);
@@ -372,6 +376,7 @@ public class HomePagePane extends AnchorPane {
             danMuStage.setScene(danMuScene);
             danMuStage.show();
         });
+        presentItem.setOnMouseClicked(event -> System.out.println(jdbcTemplate));
 
         appPane.addRow(0, danmakuItem);
         appPane.addRow(0, presentItem);
@@ -494,7 +499,8 @@ public class HomePagePane extends AnchorPane {
         return anchorPane;
     }
 
-    private void setLoginPane(AnchorPane userInfoPane, HostServices hostServices) {
+
+    private void setLoginPane(AnchorPane userInfoPane) {
         var loginButton = new Label("登录Bilibili账号");
         loginButton.setPrefWidth(114);
         loginButton.setPrefHeight(32);
@@ -525,7 +531,7 @@ public class HomePagePane extends AnchorPane {
                     if (userInfoResult.isEmpty() || liveInfoResult.isEmpty()) {
                         return;
                     }
-                    setLoginSuccessPane(userInfoPane, userInfoResult.get(), liveInfoResult.get(), hostServices);
+                    setLoginSuccessPane(userInfoPane, userInfoResult.get(), liveInfoResult.get());
                     bilibiliLoginStage.close();
                 });
 
@@ -546,7 +552,7 @@ public class HomePagePane extends AnchorPane {
         userInfoPane.getChildren().setAll(loginButton);
     }
 
-    private void setLoginSuccessPane(AnchorPane userInfoPane, UserInfoResult userInfoResult, LiveInfoResult liveInfoResult, HostServices hostServices) {
+    private void setLoginSuccessPane(AnchorPane userInfoPane, UserInfoResult userInfoResult, LiveInfoResult liveInfoResult) {
 
 
 //        var dropShadow = new DropShadow(BlurType.GAUSSIAN, Color.valueOf("#80808077"), 1.5, 0, 0, 0);
@@ -689,7 +695,7 @@ public class HomePagePane extends AnchorPane {
             label.setOnMouseClicked(event -> {
                 if (event.getButton() == MouseButton.PRIMARY) {
                     if (label.getUserData() != null) {
-                        hostServices.showDocument(String.valueOf(label.getUserData()));
+                        GlobalData.hostServices.showDocument(String.valueOf(label.getUserData()));
                     }
                 }
             });

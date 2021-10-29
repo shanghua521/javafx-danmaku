@@ -3,6 +3,7 @@ package com.wang.javafxdanmaku;
 import com.wang.javafxdanmaku.pane.HomePagePane;
 import com.wang.javafxdanmaku.tools.UndecoratedWindow;
 import javafx.application.Application;
+import javafx.application.Platform;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.event.Event;
@@ -20,13 +21,17 @@ import javafx.scene.paint.Color;
 import javafx.scene.paint.Paint;
 import javafx.scene.text.Font;
 import javafx.stage.Stage;
-import javafx.stage.StageStyle;
+import org.springframework.boot.builder.SpringApplicationBuilder;
+import org.springframework.context.ApplicationEvent;
+import org.springframework.context.ConfigurableApplicationContext;
+import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import static com.wang.javafxdanmaku.ImagesConstants.*;
 
+@Component
 public class DanmakuApplication extends Application {
 
     private static final SimpleIntegerProperty menuIndex = new SimpleIntegerProperty();
@@ -40,22 +45,36 @@ public class DanmakuApplication extends Application {
     private final UndecoratedWindow undecoratedWindowForLeftView = new UndecoratedWindow();
     private final UndecoratedWindow undecoratedWindowForTopView = new UndecoratedWindow();
     private final List<Label> menuButtons = new ArrayList<>();
+    private ConfigurableApplicationContext applicationContext;
 
     public static void main(String[] args) {
-        launch();
+        Application.launch(DanmakuApplication.class, args);
+    }
+
+    @Override
+    public void init() {
+        applicationContext = new SpringApplicationBuilder(DanMaKuSpringBootApplication.class).run();
+        GlobalData.applicationContext = applicationContext;
+    }
+
+    @Override
+    public void stop() {
+        applicationContext.close();
+        Platform.exit();
     }
 
     @Override
     public void start(Stage primaryStage) {
+        applicationContext.publishEvent(new StageReadyEvent(primaryStage));
         var anchorPane = new AnchorPane();
         var leftView = getLeftView(anchorPane, primaryStage);
         var topView = getTopView(primaryStage);
 
         anchorPane.setStyle("-fx-background-color: #FFFFFF");
 
-        var hostServices = this.getHostServices();
+        var homePagePane = applicationContext.getBean(HomePagePane.class);
+        GlobalData.hostServices = this.getHostServices();
 
-        var homePagePane = new HomePagePane(hostServices);
         homePagePane.setStyle("-fx-background-color: white");
         homePagePane.prefHeightProperty().bind(anchorPane.heightProperty().subtract(topView.prefHeightProperty()));
         homePagePane.prefWidthProperty().bind(anchorPane.widthProperty().subtract(leftView.prefWidthProperty()));
@@ -66,12 +85,7 @@ public class DanmakuApplication extends Application {
         AnchorPane.setLeftAnchor(homePagePane, leftView.getPrefWidth());
         AnchorPane.setTopAnchor(homePagePane, topView.getPrefHeight() + 1);
         Scene scene = new Scene(anchorPane, 960, 600);
-        primaryStage.setResizable(false);
-        primaryStage.centerOnScreen();
-        primaryStage.initStyle(StageStyle.UNDECORATED);
-        primaryStage.setTitle("bilibili - danmaku");
         primaryStage.setScene(scene);
-        primaryStage.show();
     }
 
     public VBox getLeftView(AnchorPane anchorPane, Stage stage) {
@@ -188,5 +202,15 @@ public class DanmakuApplication extends Application {
         label.addEventHandler(MouseEvent.MOUSE_PRESSED, Event::consume);
         label.addEventHandler(MouseEvent.MOUSE_ENTERED, event -> label.setGraphic(lightImage));
         label.addEventHandler(MouseEvent.MOUSE_EXITED, event -> label.setGraphic(darkImage));
+    }
+
+    static class StageReadyEvent extends ApplicationEvent {
+        public StageReadyEvent(Stage stage) {
+            super(stage);
+        }
+
+        public Stage getStage() {
+            return (Stage) getSource();
+        }
     }
 }

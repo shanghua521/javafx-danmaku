@@ -20,7 +20,7 @@ public class BilibiliLoginPane extends AnchorPane {
 
     public BilibiliLoginPane() {
         super();
-        java.net.CookieManager manager = new CookieManager(GlobalData.myCookieStore, CookiePolicy.ACCEPT_ALL);
+        java.net.CookieManager manager = new CookieManager(GlobalData.applicationContext.getBean(MyCookieStore.class), CookiePolicy.ACCEPT_ALL);
         java.net.CookieHandler.setDefault(manager);
 
         webView.setZoom(0.8);

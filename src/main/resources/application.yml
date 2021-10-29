@@ -1,0 +1,12 @@
+spring:
+  datasource:
+    url: jdbc:sqlite:/home/shanghua/.danmaku/database.sqlite
+    driver-class-name: org.sqlite.JDBC
+    username:
+    password:
+  main:
+    web-application-type: none
+
+logging:
+  level:
+    org.springframework.boot.autoconfigure: error

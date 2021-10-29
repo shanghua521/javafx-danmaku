@@ -1,5 +1,7 @@
 package com.wang.javafxdanmaku;
 
+import org.springframework.stereotype.Component;
+
 import java.net.CookieStore;
 import java.net.HttpCookie;
 import java.net.URI;
@@ -7,6 +9,7 @@ import java.net.URISyntaxException;
 import java.util.*;
 import java.util.concurrent.locks.ReentrantLock;
 
+@Component
 public class MyCookieStore implements CookieStore {
     private final List<HttpCookie> cookieJar;
     private final Map<String, List<HttpCookie>> domainIndex;
