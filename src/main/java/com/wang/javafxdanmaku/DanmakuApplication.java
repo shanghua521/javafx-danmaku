@@ -188,7 +188,7 @@ public class DanmakuApplication extends Application {
 
         var title = new Label("首页");
         title.setTextFill(Color.valueOf("#515A6E"));
-        title.setFont(Font.loadFont(FontsResourcesPath.SIYUANBOLD, 18));
+        title.setFont(Font.loadFont(getClass().getResourceAsStream(FontsResourcesPath.SIYUANBOLD), 18));
         title.textProperty().bind(DanmakuApplication.title);
         topView.getChildren().addAll(title);
 

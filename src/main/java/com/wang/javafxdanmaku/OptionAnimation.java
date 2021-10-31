@@ -7,7 +7,9 @@ import javafx.animation.Timeline;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 
-public record OptionAnimation(Stage stage) {
+public class OptionAnimation {
+
+    private Stage stage;
 
     public Timeline animation(double from, double to) {
         var timeline = new Timeline();
@@ -17,5 +19,9 @@ public record OptionAnimation(Stage stage) {
         var keyFrame2 = new KeyFrame(Duration.seconds(0.2), keyValue2);
         timeline.getKeyFrames().addAll(keyFrame1, keyFrame2);
         return timeline;
+    }
+
+    public void setStage(Stage stage) {
+        this.stage = stage;
     }
 }

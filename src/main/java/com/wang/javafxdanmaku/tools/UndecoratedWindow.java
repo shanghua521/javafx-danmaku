@@ -16,16 +16,17 @@ public class UndecoratedWindow {
     private EventHandler<MouseEvent> mouseDraggedHandler;
     private WeakEventHandler<MouseEvent> weakMousePressedHandler;
     private WeakEventHandler<MouseEvent> weakMouseDraggedHandler;
+    private final OptionAnimation optionAnimation = new OptionAnimation();
 
     /**
      * Give the Node that will be dragged (entire window or simply your Title
      * Bar), and the Stage that will be moved.
      *
-     * @param node node
+     * @param node  node
      * @param stage stage
      */
     public void allowDrag(Node node, Stage stage) {
-        var optionAnimation = new OptionAnimation(stage);
+        optionAnimation.setStage(stage);
         mousePressedHandler = (MouseEvent event) -> {
             mouseDragDeltaX = node.getTranslateX() - event.getSceneX();
             mouseDragDeltaY = node.getTranslateY() - event.getSceneY();

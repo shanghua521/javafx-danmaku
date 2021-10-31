@@ -16,7 +16,7 @@ import java.util.concurrent.TimeUnit;
 public class DanMuPane extends AnchorPane {
 
     private static DanMuPane danMuPane = null;
-    private final Font messageFont = Font.loadFont(FontsResourcesPath.SIYUANREGULAR, 15);
+    private final Font messageFont = Font.loadFont(getClass().getResourceAsStream(FontsResourcesPath.SIYUANREGULAR), 15);
     public VBox messages;
     public AnchorPane mask;
     public Label viewNumValue;
@@ -34,7 +34,7 @@ public class DanMuPane extends AnchorPane {
         this.getChildren().addAll(mask, anchorPane);
         this.setStyle("-fx-background-color: rgba(0,0,0,0);");
 
-        var font = Font.loadFont(FontsResourcesPath.SIYUANREGULAR, 14);
+        var font = Font.loadFont(getClass().getResourceAsStream(FontsResourcesPath.SIYUANREGULAR), 14);
 
         var bottomView = new HBox(16);
 
