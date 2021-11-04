@@ -28,15 +28,13 @@ public class ImagesConstants {
         imageViewWhiteHomePage.setPreserveRatio(true);
         imageViewDarkHomePage.setFitWidth(19);
         imageViewDarkHomePage.setPreserveRatio(true);
-        imageViewWhiteHistory.setFitWidth(26);
-        imageViewWhiteHistory.setSmooth(true);
+        imageViewWhiteHistory.setFitWidth(28);
         imageViewWhiteHistory.setPreserveRatio(true);
-        imageViewDarkHistory.setFitWidth(26);
-        imageViewDarkHistory.setSmooth(true);
+        imageViewDarkHistory.setFitWidth(28);
         imageViewDarkHistory.setPreserveRatio(true);
-        imageViewWhiteStatistics.setFitWidth(20);
+        imageViewWhiteStatistics.setFitWidth(25);
         imageViewWhiteStatistics.setPreserveRatio(true);
-        imageViewDarkStatistics.setFitWidth(20);
+        imageViewDarkStatistics.setFitWidth(25);
         imageViewDarkStatistics.setPreserveRatio(true);
     }
 }

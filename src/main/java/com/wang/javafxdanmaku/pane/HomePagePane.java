@@ -61,10 +61,8 @@ public class HomePagePane extends AnchorPane {
     private final StringProperty liveTextId = new SimpleStringProperty();
     private int leftOrRight = 0;
     private Pane liveRoomInfoPane;
-
     @Autowired
     private JdbcTemplate jdbcTemplate;
-    private final InputStream inputStreamSIYUANREGULAR = getClass().getResourceAsStream(FontsResourcesPath.SIYUANREGULAR);
 
     public HomePagePane() {
         super();
@@ -106,11 +104,11 @@ public class HomePagePane extends AnchorPane {
 
         var mainRoomLabel = new Label("主房间");
         mainRoomLabel.setTextFill(Paint.valueOf("#4FBDEA"));
-        mainRoomLabel.setFont(Font.loadFont(inputStreamSIYUANREGULAR, 14));
+        mainRoomLabel.setFont(Font.font(FontsResources.SIYUANREGULARFONT.getFamily(), 14));
 
         var mainRoomIdLabel = new Label("直播间ID: " + liveRoomInfo.getRoom_id() + "");
         mainRoomLabel.setTextFill(Paint.valueOf("#666E80"));
-        mainRoomLabel.setFont(Font.loadFont(getClass().getResourceAsStream(FontsResourcesPath.SIYUANREGULAR), 14));
+        mainRoomLabel.setFont(Font.font(FontsResources.SIYUANREGULARFONT.getFamily(), 14));
 
         var mainRoomHBox = new HBox(10);
         mainRoomHBox.getChildren().addAll(mainRoomLabel, mainRoomIdLabel);
@@ -120,7 +118,7 @@ public class HomePagePane extends AnchorPane {
         connectLiveRoomButton.setCursor(Cursor.HAND);
         connectLiveRoomButton.setTextFill(Color.WHITE);
         connectLiveRoomButton.setStyle("-fx-background-color: #23ADE5");
-        connectLiveRoomButton.setFont(Font.loadFont(getClass().getResourceAsStream(FontsResourcesPath.SIYUANREGULAR), 13));
+        connectLiveRoomButton.setFont(Font.font(FontsResources.SIYUANREGULARFONT.getFamily(), 13));
         connectLiveRoomButton.setOnMouseClicked(event -> connectLiveRoom(String.valueOf(liveRoomInfo.getRoom_id())));
         connectLiveRoomButton.setOnMouseExited(event -> connectLiveRoomButton.setStyle("-fx-background-color: #23ADE5"));
         connectLiveRoomButton.setOnMouseEntered(event -> connectLiveRoomButton.setStyle("-fx-background-color: #4FBDEA"));
@@ -146,7 +144,7 @@ public class HomePagePane extends AnchorPane {
         var mainRoomLabelList = List.of(mainRoomTitleLabel, mainRoomTitleValue, mainRoomAreaLabel, mainRoomAreaValue, mainRoomCoverLabel);
 
         var paint = Paint.valueOf("#515A6E");
-        var font = Font.loadFont(getClass().getResourceAsStream(FontsResourcesPath.SIYUANREGULAR), 12);
+        var font = Font.font(FontsResources.SIYUANREGULARFONT.getFamily(), 12);
         mainRoomLabelList.forEach(label -> {
             label.setTextFill(paint);
             label.setFont(font);
@@ -236,7 +234,7 @@ public class HomePagePane extends AnchorPane {
         liveId.setPrefWidth(186);
         liveId.setPrefHeight(31);
         liveId.setPromptText("直播间ID");
-        liveId.setFont(Font.loadFont(getClass().getResourceAsStream(FontsResourcesPath.SIYUANREGULAR), 12));
+        liveId.setFont(Font.font(FontsResources.SIYUANREGULARFONT.getFamily(), 12));
         liveId.setBackground(new Background(new BackgroundFill(Paint.valueOf("#FFFFFF"), new CornerRadii(5, 0, 0, 5, false), null)));
 
         var defaultBorder = new Border(new BorderStroke(Paint.valueOf("#DDDEEA"), BorderStrokeStyle.SOLID, new CornerRadii(5, 0, 0, 5, false), null));
@@ -251,7 +249,7 @@ public class HomePagePane extends AnchorPane {
         addLive.setPrefHeight(31);
         addLive.setCursor(Cursor.HAND);
         addLive.setAlignment(Pos.CENTER);
-        addLive.setFont(Font.loadFont(getClass().getResourceAsStream(FontsResourcesPath.SIYUANREGULAR), 12));
+        addLive.setFont(Font.font(FontsResources.SIYUANREGULARFONT.getFamily(), 12));
         addLive.setBackground(new Background(new BackgroundFill(Paint.valueOf("#F8F8F9"), new CornerRadii(0, 5, 5, 0, false), null)));
         addLive.setBorder(new Border(new BorderStroke(Paint.valueOf("#DDDEEA"), BorderStrokeStyle.SOLID, new CornerRadii(0, 5, 5, 0, false), new BorderWidths(1, 1, 1, 0))));
 
@@ -298,7 +296,7 @@ public class HomePagePane extends AnchorPane {
         appModule.setCursor(Cursor.HAND);
         appModule.setAlignment(Pos.CENTER);
         appModule.setTextFill(Color.valueOf("#515A6E"));
-        appModule.setFont(Font.loadFont(getClass().getResourceAsStream("/fonts/SourceHanSansCN-Bold-2.otf"), 14));
+        appModule.setFont(Font.font(FontsResources.SIYUANBOLDFONT.getFamily(), 14));
 
         var obsModule = new Label("OBS模块");
         obsModule.setPrefWidth(89);
@@ -306,7 +304,7 @@ public class HomePagePane extends AnchorPane {
         obsModule.setCursor(Cursor.HAND);
         obsModule.setAlignment(Pos.CENTER);
         obsModule.setTextFill(Color.valueOf("#515A6E"));
-        obsModule.setFont(Font.loadFont(getClass().getResourceAsStream("/fonts/SourceHanSansCN-Bold-2.otf"), 14));
+        obsModule.setFont(Font.font(FontsResources.SIYUANBOLDFONT.getFamily(), 14));
 
         var clickColor = Paint.valueOf("#23ADE5");
         var defaultColor = Paint.valueOf("#515A6E");
@@ -489,7 +487,7 @@ public class HomePagePane extends AnchorPane {
         txtLabel.setPrefHeight(50);
         txtLabel.setAlignment(Pos.CENTER);
         txtLabel.setTextFill(Paint.valueOf("#515A6E"));
-        txtLabel.setFont(Font.loadFont(getClass().getResourceAsStream("/fonts/SourceHanSansCN-Bold-2.otf"), 16));
+        txtLabel.setFont(Font.font(FontsResources.SIYUANBOLDFONT.getFamily(), 16));
 
         AnchorPane.setTopAnchor(image, 0.5);
         AnchorPane.setLeftAnchor(image, 0.5);
@@ -507,7 +505,7 @@ public class HomePagePane extends AnchorPane {
         loginButton.setCursor(Cursor.HAND);
         loginButton.setTextFill(Color.WHITE);
         loginButton.setAlignment(Pos.CENTER);
-        loginButton.setFont(Font.loadFont(getClass().getResourceAsStream(FontsResourcesPath.SIYUANREGULAR), 12));
+        loginButton.setFont(Font.font(FontsResources.SIYUANREGULARFONT.getFamily(), 12));
 
         var defaultBackground = new Background(new BackgroundFill(Color.valueOf("#27AEE5"), new CornerRadii(5), null));
         var mouseEnterBackground = new Background(new BackgroundFill(Color.valueOf("#4FBDEA"), new CornerRadii(5), null));
@@ -560,7 +558,7 @@ public class HomePagePane extends AnchorPane {
 //        userInfoPane.setOnMouseEntered(event -> userInfoPane.setEffect(dropShadow));
         var username = new Label();
         username.setTextFill(fontColor);
-        username.setFont(Font.loadFont(getClass().getResourceAsStream("/fonts/SourceHanSansCN-Bold-2.otf"), 14));
+        username.setFont(Font.font(FontsResources.SIYUANBOLDFONT.getFamily(), 14));
 
         // 用户信息
         var userinfo = new HBox(5);
@@ -572,7 +570,7 @@ public class HomePagePane extends AnchorPane {
         var liveTimeForMonthVal = new Label("0");
         var sanLabel = new Label("SAN值");
         var sanVal = new Label("12");
-        var userInfoFont = Font.loadFont(getClass().getResourceAsStream(FontsResourcesPath.SIYUANREGULAR), 12);
+        var userInfoFont = Font.font(FontsResources.SIYUANREGULARFONT.getFamily(), 12);
 
         var userData = userInfoResult.getData();
 
@@ -592,7 +590,7 @@ public class HomePagePane extends AnchorPane {
         userinfo.getChildren().addAll(uidLabel, uidVal, liveIdLabel, liveIdVal, liveTimeForMonthLabel, liveTimeForMonthVal, sanLabel, sanVal);
         setFonts(userinfo.getChildren(), fontColor, userInfoFont);
 
-        var levelFont = Font.loadFont(getClass().getResourceAsStream(FontsResourcesPath.SIYUANREGULAR), 14);
+        var levelFont = Font.font(FontsResources.SIYUANREGULARFONT.getFamily(), 14);
 
         var level = new HBox(20);
         level.setAlignment(Pos.CENTER);
@@ -673,7 +671,7 @@ public class HomePagePane extends AnchorPane {
         var logout = new Label("登出");
 
 
-        var toolFont = Font.loadFont(getClass().getResourceAsStream(FontsResourcesPath.SIYUANREGULAR), 12.5);
+        var toolFont = Font.font(FontsResources.SIYUANREGULARFONT.getFamily(), 12.5);
         var toolList = List.of(liveRoom, liveSetting, liveCentre, biliSpace, messageCentre, logout);
         var defaultToolBorder = new Border(new BorderStroke(Paint.valueOf("#DDDEEA"), BorderStrokeStyle.SOLID, new CornerRadii(3), new BorderWidths(1)));
         var blueToolBorder = new Border(new BorderStroke(Paint.valueOf("#4FBDEA"), BorderStrokeStyle.SOLID, new CornerRadii(3), new BorderWidths(1)));
