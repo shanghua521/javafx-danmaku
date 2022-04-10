@@ -59,7 +59,6 @@ public class DanmakuApplication extends Application {
 
     @Override
     public void stop() {
-        applicationContext.close();
         Platform.exit();
     }
 
@@ -107,7 +106,8 @@ public class DanmakuApplication extends Application {
         var exitButton = new Label();
         exitButton.setOnMouseClicked(event -> {
             if (event.getButton() == MouseButton.PRIMARY) {
-                stage.close();
+                applicationContext.close();
+                Platform.exit();
             }
         });
         labelExitMinimizeInit(exitButton, imageViewLightExit, imageViewDarkExit);

@@ -25,7 +25,7 @@ public class DanMuPane extends AnchorPane {
         mask = new AnchorPane();
         mask.setPrefWidth(320);
         mask.setPrefHeight(399);
-        mask.setStyle("-fx-background-color: rgba(0,0,0,0);");
+        mask.setStyle("-fx-background-color: rgba(255,255,255,0);");
 
         var anchorPane = new AnchorPane();
         anchorPane.setPrefWidth(320);
@@ -132,6 +132,7 @@ public class DanMuPane extends AnchorPane {
         var children = messages.getChildren();
         if (children.size() >= 17) {
             children.remove(children.get(0));
+            mask.setPrefHeight(mask.getPrefHeight() - 22);
         } else {
             mask.setPrefHeight(mask.getPrefHeight() - 22);
         }

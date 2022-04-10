@@ -80,7 +80,7 @@ public class DanMuMessageClient extends WebSocketClient {
                 }
             } else if (data_ver == 1) {
                 if (data_type == 3) {
-                    log.info("房间人气：{}", bytesToLong(bs));
+                    log.debug("房间人气：{}", bytesToLong(bs));
                 } else {
                     resultStr = toHexString(bs);
                     log.debug("！！！！！！！！！！未知数据(2)v:" + data_ver + "t:" + data_type + ":" + resultStr);
@@ -94,7 +94,7 @@ public class DanMuMessageClient extends WebSocketClient {
                 resultStr = toHexString(bs);
                 log.debug("！！！！！！！！！！未知数据(2)v:" + data_ver + "t:" + data_type + ":" + resultStr);
             }
-            log.info("data_ver {} data_type {} resultStr：{}", data_ver, data_type, resultStr);
+            log.debug("data_ver {} data_type {} resultStr：{}", data_ver, data_type, resultStr);
             offect += data_len;
         }
     }
@@ -161,7 +161,7 @@ public class DanMuMessageClient extends WebSocketClient {
 
     @Override
     public void onMessage(String s) {
-        System.out.println(s);
+//        System.out.println(s);
     }
 
     @SneakyThrows
@@ -210,7 +210,7 @@ public class DanMuMessageClient extends WebSocketClient {
             if (packageType == 3) {
                 var roomPeopleNum = bytesToLong(baseResultBytes);
                 Platform.runLater(() -> DanMuPane.getInstance().viewNumValue.setText(String.valueOf(roomPeopleNum)));
-                log.info("房间人气 {}", roomPeopleNum);
+                log.debug("房间人气 {}", roomPeopleNum);
             } else if (packageType == 8) {
                 // 返回{code 0} 验证头消息成功后返回
                 String resultStr = new String(baseResultBytes, StandardCharsets.UTF_8);
@@ -222,7 +222,7 @@ public class DanMuMessageClient extends WebSocketClient {
         } else if (packageVersion == 0) {
             // 弹幕消息 ，目前发现的有发送的 gif，以及一个 STOP_LIVE_ROOM_LIST
             String messageString = new String(baseResultBytes, StandardCharsets.UTF_8);
-            log.info("弹幕消息 {}", messageString);
+            log.debug("弹幕消息 {}", messageString);
         } else {
             String resultStr = toHexString(baseResultBytes);
             log.warn("！！！！！！！！！！未知数据(1)v:" + packageVersion + "t:" + packageType + ":" + resultStr);

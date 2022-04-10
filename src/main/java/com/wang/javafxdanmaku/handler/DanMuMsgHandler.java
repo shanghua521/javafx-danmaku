@@ -10,7 +10,6 @@ import java.util.function.Consumer;
 
 public class DanMuMsgHandler implements Consumer<JsonNode> {
 
-    @SneakyThrows
     @Override
     public void accept(JsonNode jsonNode) {
         var info = jsonNode.get("info");

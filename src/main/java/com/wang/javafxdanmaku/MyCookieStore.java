@@ -2,10 +2,7 @@ package com.wang.javafxdanmaku;
 
 import org.springframework.stereotype.Component;
 
-import java.net.CookieStore;
-import java.net.HttpCookie;
-import java.net.URI;
-import java.net.URISyntaxException;
+import java.net.*;
 import java.util.*;
 import java.util.concurrent.locks.ReentrantLock;
 
@@ -34,6 +31,7 @@ public class MyCookieStore implements CookieStore {
         }
         // 我们需要的 bilibili cookie
         if ("SESSDATA".equals(cookie.getName())) {
+            // 存储
             GlobalData.bilibiliCookie = cookie;
         }
         if ("bili_jct".equals(cookie.getName())) {

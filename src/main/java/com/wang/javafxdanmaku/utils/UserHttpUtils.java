@@ -5,6 +5,7 @@ import com.wang.javafxdanmaku.entity.live.LiveInfoResult;
 import com.wang.javafxdanmaku.entity.UserInfoResult;
 import lombok.SneakyThrows;
 
+import javax.net.ssl.HttpsURLConnection;
 import java.net.URL;
 import java.util.Optional;
 
